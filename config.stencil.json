@@ -1,0 +1,10 @@
+{
+  "customLayouts": {
+    "brand": {},
+    "category": {},
+    "page": {},
+    "product": {}
+  },
+  "normalStoreUrl": "https://obundle-test-i6.mybigcommerce.com/?ctk=d63797e6-6c20-41be-89e6-ed73f12b965e",
+  "port": 3000
+}
