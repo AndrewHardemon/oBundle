@@ -3,6 +3,8 @@ category:
     shop_by_price: true
     products:
         limit: {{theme_settings.categorypage_products_per_page}}
+cart:
+    ok: true
 ---
 {{inject "categoryProductsPerPage" theme_settings.categorypage_products_per_page}}
 {{#partial "head"}}
@@ -24,6 +26,16 @@ category:
         lazyload=theme_settings.lazyload_mode
         class="category-header-image"
     }}
+{{/if}}
+{{#if customer}}
+    <div class="page-heading-banner">
+        {{log this.cart_id}}
+        {{!-- {{log this.category.total_products}} --}}
+        {{log this.category.products}}
+        <p class="page-heading-banner__text">Hello {{customer.name}}! Welcome to {{category.name}}</p>
+        <button>Add All</button>
+        <button>Remove All</button>
+    </div>
 {{/if}}
 {{#unless theme_settings.hide_category_page_heading }}
     <h1 class="page-heading">{{category.name}}</h1>
@@ -55,3 +67,52 @@ category:
 
 {{/partial}}
 {{> layout/base}}
+<script>
+    (async () => { 
+        //? Alternate way to get cart
+        const response = await fetch('/api/storefront/cart', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        const cart = response.json()
+        console.log(cart)
+
+        // const products = Array.from("{{this.category.total_products}}").map((_, i) => {
+        //     return {
+        //         id: `{{this.category.products.[${i}].id}}`,
+        //         name: `{{this.category.products.[${i}].name}}`,
+        //         price: `{{this.category.products.[${i}].price.value}}`,
+        //         url: `{{this.category.products.[${i}].url}}`,
+        //         image: `{{this.category.products.[${i}].primary_image.src}}`
+        //     }
+        // })
+        // let prod = `{{#each this.category.products as |product|}}{{product.id}}__{{product.variants.[0].id}}__{{product.name}}__{{product.price.value}}__{{product.url}}__{{product.primary_image.src}}##{{/each}}`
+        // let prodList = prod.split("##").map(item => item.trim().split("__"))
+        let prod = `{{#each this.category.products as |product|}}{{product.id}},{{/each}}`
+        let prodList = prod.split(",").splice(0, prod.split(",").length - 1).map(item => ({quantity: 1, productId: item.trim(), variantId: null}))
+        console.log(prodList)
+        // let cart = "{{this.cart}}"
+        // console.log(cart)
+
+        const addAll = document.querySelector('.page-heading-banner button')
+        addAll.addEventListener("click", function(){
+            const options = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({lineItems: prodList})
+            };
+
+            fetch('/api/storefront/carts/{{this.cart_id}}/items', options)
+                .then(response => response.json())
+                .then(response => {
+                    console.log(response)
+                })
+                .catch(err => console.error(err));
+        })
+        const removeAll = document.querySelector('.page-heading-banner button:nth-child(2)')
+    })()
+</script>

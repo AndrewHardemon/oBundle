@@ -4,6 +4,7 @@ cart: true
 {{inject 'cancelButtonText' (lang 'common.cancel')}}
 {{#partial "page"}}
 {{inject 'invalidEntryMessage' (lang 'cart.invalid_entry_message')}}
+{{log this.cart}}
 <div class="page">
 
     <div class="page-content" data-cart>

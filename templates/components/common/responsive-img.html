@@ -73,23 +73,23 @@ class="{{#unless lazyload '==' 'disabled'}}lazyload{{/unless}}{{#if class}} {{cl
 <script>
     // Initalize variables for original values
     (() => {
-    let oldImageSet;
-    let oldImageSrc;
-    // Hover event for changing image
-    document.getElementById("{{image.alt}}").addEventListener("mouseover", function() {
-        oldImageSet = this.srcset;
-        oldImageSrc = this.src;
+        let oldImageSet;
+        let oldImageSrc;
+        // Hover event for changing image
+        document.getElementById("{{image.alt}}").addEventListener("mouseover", function() {
+            oldImageSet = this.srcset;
+            oldImageSrc = this.src;
 
-        let newImageSet = document.getElementById("{{image.alt}}_1").getAttribute("data-srcset")
-        let newImageSrc = document.getElementById("{{image.alt}}_1").textContent.trim()
+            let newImageSet = document.getElementById("{{image.alt}}_1").getAttribute("data-srcset")
+            let newImageSrc = document.getElementById("{{image.alt}}_1").textContent.trim()
 
-        this.src=newImageSrc
-        this.srcset=newImageSet
-    });
-    // Reset image on mouseout
-    document.getElementById("{{image.alt}}").addEventListener("mouseout", function() {
-        this.src=oldImageSrc
-        this.srcset=oldImageSet
-    });
-})()
+            this.src=newImageSrc
+            this.srcset=newImageSet
+        });
+        // Reset image on mouseout
+        document.getElementById("{{image.alt}}").addEventListener("mouseout", function() {
+            this.src=oldImageSrc
+            this.srcset=oldImageSet
+        });
+    })()
 </script>

@@ -1,5 +1,4 @@
 {{inject 'noCompareMessage' (lang 'compare.no_compare')}}
-{{log this.category.products}}
 {{#if category.products}}
     {{> components/products/filter sort=pagination.category.sort}}
     <div data-list-name="Category: {{category.name}}">
