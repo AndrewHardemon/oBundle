@@ -25,3 +25,4 @@ secrets.stencil.json
 Thumbs.db
 UserInterfaceState.xcuserstate
 .env
+parsed/

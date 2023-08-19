@@ -73,23 +73,28 @@ class="{{#unless lazyload '==' 'disabled'}}lazyload{{/unless}}{{#if class}} {{cl
 <script>
     // Initalize variables for original values
     (() => {
-    let oldImageSet;
-    let oldImageSrc;
-    // Hover event for changing image
-    document.getElementById("{{image.alt}}").addEventListener("mouseover", function() {
-        oldImageSet = this.srcset;
-        oldImageSrc = this.src;
+        let oldImageSet;
+        let oldImageSrc;
+        // Hover event for changing image
+        console.log(("{{image.alt}}").split(" ").join("_"))
+        const elem = document.getElementById("{{image.alt}}")
+        if(!elem) return;
+        elem.addEventListener("mouseover", function() {
+            oldImageSet = this.srcset;
+            oldImageSrc = this.src;
 
-        let newImageSet = document.getElementById("{{image.alt}}_1").getAttribute("data-srcset")
-        let newImageSrc = document.getElementById("{{image.alt}}_1").textContent.trim()
+            let altElem = document.getElementById("{{image.alt}}_1")
+            if(!altElem) return;
+            let newImageSet = altElem.getAttribute("data-srcset")
+            let newImageSrc = altElem.textContent.trim()
 
-        this.src=newImageSrc
-        this.srcset=newImageSet
-    });
-    // Reset image on mouseout
-    document.getElementById("{{image.alt}}").addEventListener("mouseout", function() {
-        this.src=oldImageSrc
-        this.srcset=oldImageSet
-    });
-})()
+            this.src=newImageSrc
+            this.srcset=newImageSet
+        });
+        // Reset image on mouseout
+        elem.addEventListener("mouseout", function() {
+            this.src=oldImageSrc
+            this.srcset=oldImageSet
+        });
+    })()
 </script>
