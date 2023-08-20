@@ -76,7 +76,6 @@ class="{{#unless lazyload '==' 'disabled'}}lazyload{{/unless}}{{#if class}} {{cl
         let oldImageSet;
         let oldImageSrc;
         // Hover event for changing image
-        console.log(("{{image.alt}}").split(" ").join("_"))
         const elem = document.getElementById("{{image.alt}}")
         if(!elem) return;
         elem.addEventListener("mouseover", function() {

@@ -18,14 +18,9 @@ cart:
 
 {{#partial "page"}}
 {{#if customer}}
-    <div class="page-heading-banner" style="background-color: rgb(255, 254, 195); border: 1px solid black; padding: 15px; margin-bottom: 10px">
-        {{log this.customer}}
-        <div style="display:flex; justify-content: space-between; align-items: center;">
-            <p class="page-heading-banner__text" style="margin-bottom: 0px"
-            >Hello {{customer.name}}! Welcome to oBundle's {{category.name}}</p>
-            <p class="page-heading-banner__text" style="margin-bottom: 0px">{{customer.shipping_address.city}}, {{customer.shipping_address.state}}, {{customer.shipping_address.country}}</p>
-        </div>
-
+    <div class="page-heading-banner">
+        <p class="page-heading-banner__text">Hello {{customer.name}}! Welcome to oBundle's {{category.name}}.</p>
+        <p class="page-heading-banner__text">{{customer.shipping_address.city}}, {{customer.shipping_address.state}}, {{customer.shipping_address.country}}</p>
     </div>
 {{/if}}
 {{> components/common/breadcrumbs breadcrumbs=breadcrumbs}}
@@ -43,10 +38,10 @@ cart:
     {{{region name="category_below_header"}}}
 {{/unless}}
 {{{category.description}}}
-<div style="width:18%; display: flex; justify-content: space-around;">
-    <button class="button" id="add-all-products" style="width: 50%; padding: 6px; background-color: #92BCEA ; border-color: black; color: black; height: 30px; font-size: 13px">Add All</button>
+<div class="button-container">
+    <button class="button special-button" id="add-all-products">Add All</button>
     {{#if this.cart.quantity}}
-        <button class="button" id="remove-all-products" style="width: 50%; padding: 6px; background-color: rgb(255, 146, 136); border-color: black; color: black; height: 30px; font-size: 13px">Remove All</button>
+        <button class="button special-button" id="remove-all-products">Remove All</button>
     {{/if}}
 </div>
 <div class="page">
@@ -105,23 +100,20 @@ cart:
                 finalList.push(cartItem.id)
             }
         })
-        console.log(finalList)
 
         // Add All Products
         const addAll = document.querySelector('#add-all-products')
         addAll.addEventListener("click", async function(){
-            console.log(prodList)
             const options = {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
                 body: JSON.stringify({lineItems: prodList})
             };
-            console.log(options)
             try {
                 const response = await fetch('/api/storefront/carts/{{this.cart_id}}/items', options)
                 const result = await response.json()
                 console.log(response)
-                // setTimeout(() => location.reload(), 1000)
+                setTimeout(() => location.reload(), 1000)
             } catch (error) {
                 console.log(error)
             }
@@ -133,14 +125,11 @@ cart:
         removeAll.addEventListener("click", async function(){
             const options = {
                 method: 'DELETE',
-                // credentials: "same-origin",
                 headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}
             };
             try {
                 let cart_id = "{{this.cart_id}}"
-                console.log(finalList)
                 async function recursiveCall(finalList){
-                    console.log(finalList)
                     if(finalList.length == 0) return;
                     try {
                         const result = await fetch(`/api/storefront/carts/${cart_id}/items/${finalList[0]}`, options)
