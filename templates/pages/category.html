@@ -38,7 +38,7 @@ cart:
     {{{region name="category_below_header"}}}
 {{/unless}}
 {{{category.description}}}
-<div class="button-container">
+<div class="special-button-container">
     <button class="button special-button" id="add-all-products">Add All</button>
     {{#if this.cart.quantity}}
         <button class="button special-button" id="remove-all-products">Remove All</button>
@@ -110,7 +110,13 @@ cart:
                 body: JSON.stringify({lineItems: prodList})
             };
             try {
-                const response = await fetch('/api/storefront/carts/{{this.cart_id}}/items', options)
+                const cart_id = "{{this.cart_id}}"
+                let url = `/api/storefront/carts/${cart_id}/items`
+                if(!cart_id){
+                    options.headers = {'Content-Type': 'application/json'}
+                    url = `/api/storefront/carts`
+                }
+                const response = await fetch(url, options)
                 const result = await response.json()
                 console.log(response)
                 setTimeout(() => location.reload(), 1000)

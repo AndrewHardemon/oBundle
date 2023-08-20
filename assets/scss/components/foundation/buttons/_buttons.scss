@@ -16,12 +16,14 @@
 }
 
 .special-button {
-    width: 50%; 
-    padding: 6px; 
-    border-color: black; 
-    color: black; 
-    height: 30px; 
-    font-size: 13px
+    width: 50%;
+    min-width: 80px;
+    min-height: 40px;
+    padding: 6px;
+    border-color: #000;
+    color: #000;
+    height: 30px;
+    font-size: 13px;
 }
 
 #add-all-products {
@@ -32,8 +34,8 @@
     background-color: rgb(255, 146, 136); 
 }
 
-.button-container {
-    width:18%; 
+.special-button-container {
+    width:15rem; 
     display: flex; 
     justify-content: space-around;
 }
@@ -45,5 +47,13 @@
 .button--icon {
     svg {
         fill: stencilColor("button--icon-svg-color");
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .special-button-container {
+        width:100%; 
+        display: flex; 
+        justify-content: space-around;
     }
 }
