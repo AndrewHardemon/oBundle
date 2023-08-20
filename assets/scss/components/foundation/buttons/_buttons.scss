@@ -15,6 +15,31 @@
     }
 }
 
+.special-button {
+    width: 50%;
+    min-width: 80px;
+    min-height: 40px;
+    padding: 6px;
+    border-color: #000;
+    color: #000;
+    height: 30px;
+    font-size: 13px;
+}
+
+#add-all-products {
+    background-color: #92BCEA; 
+}
+
+#remove-all-products {
+    background-color: rgb(255, 146, 136); 
+}
+
+.special-button-container {
+    width:15rem; 
+    display: flex; 
+    justify-content: space-around;
+}
+
 .button[disabled] {
     cursor: not-allowed;
 }
@@ -22,5 +47,13 @@
 .button--icon {
     svg {
         fill: stencilColor("button--icon-svg-color");
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .special-button-container {
+        width:100%; 
+        display: flex; 
+        justify-content: space-around;
     }
 }

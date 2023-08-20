@@ -17,7 +17,12 @@ cart:
 {{/partial}}
 
 {{#partial "page"}}
-
+{{#if customer}}
+    <div class="page-heading-banner">
+        <p class="page-heading-banner__text">Hello {{customer.name}}! Welcome to oBundle's {{category.name}}.</p>
+        <p class="page-heading-banner__text">{{customer.shipping_address.city}}, {{customer.shipping_address.state}}, {{customer.shipping_address.country}}</p>
+    </div>
+{{/if}}
 {{> components/common/breadcrumbs breadcrumbs=breadcrumbs}}
 {{#if category.image}}
     {{> components/common/responsive-img
@@ -27,23 +32,18 @@ cart:
         class="category-header-image"
     }}
 {{/if}}
-{{#if customer}}
-    <div class="page-heading-banner">
-        {{!-- {{log this.category.products}} --}}
-        {{!-- {{log this.category.total_products}} --}}
-        {{!-- {{log this.cart}} --}}
-        <p class="page-heading-banner__text">Hello {{customer.name}}! Welcome to {{category.name}}</p>
-        <button id="add-all-products">Add All</button>
-        {{#if this.cart.quantity}}
-            <button id="remove-all-products">Remove All</button>
-        {{/if}}
-    </div>
-{{/if}}
+
 {{#unless theme_settings.hide_category_page_heading }}
     <h1 class="page-heading">{{category.name}}</h1>
     {{{region name="category_below_header"}}}
 {{/unless}}
 {{{category.description}}}
+<div class="special-button-container">
+    <button class="button special-button" id="add-all-products">Add All</button>
+    {{#if this.cart.quantity}}
+        <button class="button special-button" id="remove-all-products">Remove All</button>
+    {{/if}}
+</div>
 <div class="page">
     {{#if category.faceted_search_enabled}}
         <aside class="page-sidebar" id="faceted-search-container">
@@ -100,23 +100,26 @@ cart:
                 finalList.push(cartItem.id)
             }
         })
-        console.log(finalList)
 
         // Add All Products
         const addAll = document.querySelector('#add-all-products')
         addAll.addEventListener("click", async function(){
-            console.log(prodList)
             const options = {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
                 body: JSON.stringify({lineItems: prodList})
             };
-            console.log(options)
             try {
-                const response = await fetch('/api/storefront/carts/{{this.cart_id}}/items', options)
+                const cart_id = "{{this.cart_id}}"
+                let url = `/api/storefront/carts/${cart_id}/items`
+                if(!cart_id){
+                    options.headers = {'Content-Type': 'application/json'}
+                    url = `/api/storefront/carts`
+                }
+                const response = await fetch(url, options)
                 const result = await response.json()
                 console.log(response)
-                // setTimeout(() => location.reload(), 1000)
+                setTimeout(() => location.reload(), 1000)
             } catch (error) {
                 console.log(error)
             }
@@ -128,14 +131,11 @@ cart:
         removeAll.addEventListener("click", async function(){
             const options = {
                 method: 'DELETE',
-                // credentials: "same-origin",
                 headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}
             };
             try {
                 let cart_id = "{{this.cart_id}}"
-                console.log(finalList)
                 async function recursiveCall(finalList){
-                    console.log(finalList)
                     if(finalList.length == 0) return;
                     try {
                         const result = await fetch(`/api/storefront/carts/${cart_id}/items/${finalList[0]}`, options)
