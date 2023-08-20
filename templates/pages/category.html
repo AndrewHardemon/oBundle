@@ -17,7 +17,17 @@ cart:
 {{/partial}}
 
 {{#partial "page"}}
+{{#if customer}}
+    <div class="page-heading-banner" style="background-color: rgb(237, 225, 133); border: 1px solid black; border-radius: 5%; padding: 15px; margin-bottom: 10px">
+        {{log this.customer}}
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <p class="page-heading-banner__text" style="margin-bottom: 0px"
+            >Hello {{customer.name}}! Welcome to oBundle's {{category.name}}</p>
+            <p class="page-heading-banner__text" style="margin-bottom: 0px">{{customer.shipping_address.city}}, {{customer.shipping_address.state}}, {{customer.shipping_address.country}}</p>
+        </div>
 
+    </div>
+{{/if}}
 {{> components/common/breadcrumbs breadcrumbs=breadcrumbs}}
 {{#if category.image}}
     {{> components/common/responsive-img
@@ -27,23 +37,18 @@ cart:
         class="category-header-image"
     }}
 {{/if}}
-{{#if customer}}
-    <div class="page-heading-banner">
-        {{!-- {{log this.category.products}} --}}
-        {{!-- {{log this.category.total_products}} --}}
-        {{!-- {{log this.cart}} --}}
-        <p class="page-heading-banner__text">Hello {{customer.name}}! Welcome to {{category.name}}</p>
-        <button id="add-all-products">Add All</button>
-        {{#if this.cart.quantity}}
-            <button id="remove-all-products">Remove All</button>
-        {{/if}}
-    </div>
-{{/if}}
+
 {{#unless theme_settings.hide_category_page_heading }}
     <h1 class="page-heading">{{category.name}}</h1>
     {{{region name="category_below_header"}}}
 {{/unless}}
 {{{category.description}}}
+<div style="width:18%; display: flex; justify-content: space-around;">
+    <button class="button" id="add-all-products" style="width: 50%; padding: 10px; background-color: rgb(77, 128, 222); border-color: black; color: black">Add All</button>
+    {{#if this.cart.quantity}}
+        <button class="button" id="remove-all-products" style="width: 50%; padding: 10px; background-color: rgb(222, 77, 77); border-color: black; color: black">Remove All</button>
+    {{/if}}
+</div>
 <div class="page">
     {{#if category.faceted_search_enabled}}
         <aside class="page-sidebar" id="faceted-search-container">
