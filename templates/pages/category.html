@@ -29,7 +29,7 @@ cart:
 {{/if}}
 {{#if customer}}
     <div class="page-heading-banner">
-        {{log this.customer.id}}
+        {{!-- {{log this.category.products}} --}}
         {{!-- {{log this.category.total_products}} --}}
         {{!-- {{log this.cart}} --}}
         <p class="page-heading-banner__text">Hello {{customer.name}}! Welcome to {{category.name}}</p>
@@ -84,53 +84,39 @@ cart:
         console.log(carts)
 
         const cart = carts[0]//.find(user => user.customer_id == "{{this.customer.id}}")
-        if(!cart) return;
-        let cartList = cart.lineItems
+        let cartList = cart?.lineItems || []
+        cartList = cartList?.customItems?.concat(cartList.digitalItems, cartList.giftCertificates, cartList.physicalItems)
 
-        cartList = cartList.customItems.concat(cartList.digitalItems, cartList.giftCertificates, cartList.physicalItems)
-        const items = cartList.map(item => ({id: item.id, productId: item.productId}))
-        console.log(items)
-        // const products = Array.from("{{this.category.total_products}}").map((_, i) => {
-        //     return {
-        //         id: `{{this.category.products.[${i}].id}}`,
-        //         name: `{{this.category.products.[${i}].name}}`,
-        //         price: `{{this.category.products.[${i}].price.value}}`,
-        //         url: `{{this.category.products.[${i}].url}}`,
-        //         image: `{{this.category.products.[${i}].primary_image.src}}`
-        //     }
-        // })
-        // let prod = `{{#each this.category.products as |product|}}{{product.id}}__{{product.variants.[0].id}}__{{product.name}}__{{product.price.value}}__{{product.url}}__{{product.primary_image.src}}##{{/each}}`
-        // let prodList = prod.split("##").map(item => item.trim().split("__"))
+
+        const items = cartList?.map(item => ({id: item.id, productId: item.productId}))
+
         let prod = `{{#each this.category.products as |product|}}{{product.id}},{{/each}}`
-        let prodList = prod.split(",").splice(0, prod.split(",").length - 1).map(item => ({quantity: 1, productId: item.trim(), variantId: null}))
-        console.log(prodList)
-        // let cart = "{{this.cart}}"
-        // console.log(cart)
+        let prodList = prod.split(",").splice(0, prod.split(",").length - 1).map(item => ({quantity: 1, productId: item.trim(), variantId: 1}))
 
         let finalList = [];
         prodList.forEach((item, i) => {
-            let cartItem = items.find(cartItem => cartItem.productId == item.productId)
+            let cartItem = items?.find(cartItem => cartItem.productId == item.productId)
             if(cartItem){
                 finalList.push(cartItem.id)
             }
         })
         console.log(finalList)
 
-
         // Add All Products
         const addAll = document.querySelector('#add-all-products')
         addAll.addEventListener("click", async function(){
+            console.log(prodList)
             const options = {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
                 body: JSON.stringify({lineItems: prodList})
             };
-
+            console.log(options)
             try {
                 const response = await fetch('/api/storefront/carts/{{this.cart_id}}/items', options)
                 const result = await response.json()
                 console.log(response)
-                location.reload()
+                // setTimeout(() => location.reload(), 1000)
             } catch (error) {
                 console.log(error)
             }
@@ -138,37 +124,32 @@ cart:
 
         //Remove All Products
         const removeAll = document.querySelector('#remove-all-products')
+        if(!removeAll) return;
         removeAll.addEventListener("click", async function(){
             const options = {
                 method: 'DELETE',
                 // credentials: "same-origin",
-                headers: {'Content-Type': 'application/json'}
+                headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}
             };
             try {
-                // const response = await fetch(`/api/storefront/carts/{{this.cart_id}}/items/112`, options)
-                // const result = await response.json()
-                // console.log(result)
-                const promises = finalList.map(async(itemId) => {
-                    console.log(itemId)
-                    // const result = await fetch(`/api/storefront/carts/{{this.cart_id}}/items/${itemId}`, options)
-                    // const resultJson = await result.json()
-                    // return resultJson
-                    return await fetch(`/api/storefront/carts/{{this.cart_id}}/items/${itemId}`, options)
-                })
-                console.log(promises)
-                // console.log(promises)
-                const results = await Promise.all(promises)
-                const final = await Promise.all(results.map(r => r.json()))
-                console.log(final)
-                location.reload()
+                let cart_id = "{{this.cart_id}}"
+                console.log(finalList)
+                async function recursiveCall(finalList){
+                    console.log(finalList)
+                    if(finalList.length == 0) return;
+                    try {
+                        const result = await fetch(`/api/storefront/carts/${cart_id}/items/${finalList[0]}`, options)
+                        finalList.shift()
+                        await recursiveCall(finalList)
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+                await recursiveCall([...finalList])
+                setTimeout(() => location.reload(), 1000)
             } catch (error) {
                 console.log(error)
             }
-
-            // const final = await Promise.all(results.map(r => r.json()))
-            // console.log(final)
-            // location.reload()
-
         })
     })()
 </script>
