@@ -90,22 +90,10 @@ cart:
         cartList = cartList.customItems.concat(cartList.digitalItems, cartList.giftCertificates, cartList.physicalItems)
         const items = cartList.map(item => ({id: item.id, productId: item.productId}))
         console.log(items)
-        // const products = Array.from("{{this.category.total_products}}").map((_, i) => {
-        //     return {
-        //         id: `{{this.category.products.[${i}].id}}`,
-        //         name: `{{this.category.products.[${i}].name}}`,
-        //         price: `{{this.category.products.[${i}].price.value}}`,
-        //         url: `{{this.category.products.[${i}].url}}`,
-        //         image: `{{this.category.products.[${i}].primary_image.src}}`
-        //     }
-        // })
-        // let prod = `{{#each this.category.products as |product|}}{{product.id}}__{{product.variants.[0].id}}__{{product.name}}__{{product.price.value}}__{{product.url}}__{{product.primary_image.src}}##{{/each}}`
-        // let prodList = prod.split("##").map(item => item.trim().split("__"))
+
         let prod = `{{#each this.category.products as |product|}}{{product.id}},{{/each}}`
         let prodList = prod.split(",").splice(0, prod.split(",").length - 1).map(item => ({quantity: 1, productId: item.trim(), variantId: null}))
         console.log(prodList)
-        // let cart = "{{this.cart}}"
-        // console.log(cart)
 
         let finalList = [];
         prodList.forEach((item, i) => {
@@ -116,13 +104,13 @@ cart:
         })
         console.log(finalList)
 
-
         // Add All Products
         const addAll = document.querySelector('#add-all-products')
         addAll.addEventListener("click", async function(){
+            console.log(prodList)
             const options = {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
                 body: JSON.stringify({lineItems: prodList})
             };
 
@@ -142,25 +130,22 @@ cart:
             const options = {
                 method: 'DELETE',
                 // credentials: "same-origin",
-                headers: {'Content-Type': 'application/json'}
+                headers: {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}
             };
             try {
-                // const response = await fetch(`/api/storefront/carts/{{this.cart_id}}/items/112`, options)
-                // const result = await response.json()
-                // console.log(result)
-                const promises = finalList.map(async(itemId) => {
-                    console.log(itemId)
-                    // const result = await fetch(`/api/storefront/carts/{{this.cart_id}}/items/${itemId}`, options)
-                    // const resultJson = await result.json()
-                    // return resultJson
-                    return await fetch(`/api/storefront/carts/{{this.cart_id}}/items/${itemId}`, options)
-                })
-                console.log(promises)
-                // console.log(promises)
-                const results = await Promise.all(promises)
-                const final = await Promise.all(results.map(r => r.json()))
-                console.log(final)
-                location.reload()
+
+                function recursiveCall(finalList){
+                    if(finalList.length == 0) location.reload();
+                    const result = fetch(`/api/storefront/carts/{{this.cart_id}}/items/${finalList[0]}`, options)
+                    .then(res=> res.json())
+                    .then(data => {
+                        console.log(data)
+                        finalList.shift()
+                        recursiveCall(finalList)
+                    })
+                }
+                recursiveCall([...finalList])
+
             } catch (error) {
                 console.log(error)
             }
