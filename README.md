@@ -4,14 +4,16 @@
 This is my submission for oBundle's test application. In this repository you can see the history of me
 - Adding a hover feature to each product to preview an alternate image
 - Creating an Add All to Cart by Category button
-- Creating a Remove All of a Category from Cart that only shows when cart is created
+- Creating a Remove All from Cart that only shows when cart is created
+  - originally was designed to remove all of a category from cart but has been updated
 - Added Custom banner displaying the user's name and city, state, country
 
-The biggest thing I tried to acomplish was making sure the functionality worked across all items.
-The only exception is that some of the item names (one specifically) didn't play nice. So while it doesn't cause any errors. 
-That is definitely something I would want to improve upon in future updates. 
-I also tried to make the styling consistent with the oBundle Light theme and make sure any changes I made were mobile responsive. 
-The banner specifically could be improved, but it was meant to be relatively simple.
+The biggest thing I tried to acomplish was making sure the functionality worked across all items, and make the styling consistent with the oBundle Light theme and make sure any changes I made were mobile responsive.
+
+## Future Development
+1. Further improve the banner to change it's appearance and the information to shows for different screen sizes.
+2. Fix the issue with items that use url-encoded characters. Right now there is one and it is ignored by the Add All to prevent errors.
+3. Hovering over the buttons causes the image to revert back to it's original image.
 
 ## Live Website
 You can find the store here: <a href="https://obundle-test-i6.mybigcommerce.com/special-items/">oBundle Test</a>
